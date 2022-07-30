@@ -6,12 +6,19 @@ export function main(url: string) {
             .get(url)
             .then(function (response: any) {
                 const html: string = response.data;
-                const reg: RegExp = /(?<=("stream":[\s]*"))(.+?)(?=("[\s]*\}))/g;
-                const result: any = html.match(reg);
-                if (result && result.length >= 1) {
-                    const infoObj: any = JSON.parse(
-                        Buffer.from(result[0], "base64").toString("ascii")
+                const base64Reg: RegExp = /(?<=("stream":[\s]*"))(.+?)(?=("[\s]*\}))/g;      // 匹配base64编码的情况
+                const jsonReg: RegExp = /(?<=(stream:[\s]*))(\{.+?[\s]*\})(?=([\s]*\}))/g;   // 匹配为编码的情况
+                const base64Result: any = html.match(base64Reg);
+                const jsonResult: any = html.match(jsonReg);
+                let infoObj: any;
+                if (base64Result && base64Result.length >= 1) {
+                    infoObj = JSON.parse(
+                        Buffer.from(base64Result[0], "base64").toString("ascii")
                     );
+                } else if (jsonResult && jsonResult.length >= 1) {
+                    infoObj = JSON.parse(jsonResult);
+                }
+                if (infoObj) {
                     const streamInfoList: any =
                         infoObj.data[0].gameStreamInfoList;
                     //const streamerName = infoObj["data"][0]["gameLiveInfo"]["nick"];
