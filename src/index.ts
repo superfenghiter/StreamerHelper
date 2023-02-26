@@ -68,7 +68,7 @@ export class App {
 
             try {
                 this.initUnCaughtException()
-                await this.initUser()
+                // await this.initUser()
                 await this.initExitSignal()
                 await this.initStreamDisconnect()
                 await this.initSyncFileStatus()
